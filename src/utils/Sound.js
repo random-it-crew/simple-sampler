@@ -19,7 +19,21 @@ export class Sound {
 		this.duration = audioBuffer.duration
 	}
 
-	play = async (offset) => {
+	setOffset = (offset) => {
+		this.elapsed = offset
+
+		if (this.playing)
+			this.play()
+	}
+
+	play = async () => {
+		if (this.source) {
+			this.onended = null
+			this.source.disconnect()
+			this.source.stop()
+			this.source = null
+		}
+
 		const buffer = await (new Response(this.sample.blob)).arrayBuffer()
 		const audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
 		this.source = this.audioCTX.context.createBufferSource()
@@ -27,11 +41,7 @@ export class Sound {
 		this.source.buffer = audioBuffer
 		this.source.connect(this.audioCTX.context.destination)
 
-		if (offset)
-			this.source.start(0, offset)
-		else
-			this.source.start(0, this.elapsed)
-
+		this.source.start(0, this.elapsed)
 		this.startedAt = this.audioCTX.context.currentTime - this.elapsed
 
 		this.source.onended = () => {

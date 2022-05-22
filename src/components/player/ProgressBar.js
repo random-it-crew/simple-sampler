@@ -47,7 +47,6 @@ const HorizontalContainer = styled.div`
   }
 `
 
-
 const Dot = styled.span`
   height: 20px;
   width: 20px;
@@ -56,8 +55,7 @@ const Dot = styled.span`
   display: inline-block;
 `
 
-
-export const ProgressBar = ({ sample }) => {
+export const ProgressBar = ({ sample, onProgressBarClick }) => {
 	const [progress, setProgress] = useState(0)
 	const [elapsed, setElapsed] = useState(0)
 
@@ -89,7 +87,7 @@ export const ProgressBar = ({ sample }) => {
 	return (
 		<div>
 			<HorizontalContainer>
-				<Container>
+				<Container onClick={ onProgressBarClick }>
 					<Filler progress={ progress } >
 						<Dot />
 					</Filler>
