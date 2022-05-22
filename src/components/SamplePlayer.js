@@ -13,7 +13,6 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 				const audioBuffer = await audioCTX.context.decodeAudioData(buffer)
 				const newSource = audioCTX.context.createBufferSource()
 
-
 				newSource.onended = () => {
 					setIsPlaying(false)
 					setSource(null)
@@ -26,7 +25,6 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 				setPlayed(false)
 			}
 		}
-
 
 		if (!source) {
 			createSourceBuffer()

@@ -1,7 +1,8 @@
 import useRecorder from '../hooks/useRecorder'
 import React, { useEffect } from 'react'
+import { LiveWaveForm } from './LiveWaveForm'
 
-export const Recorder = ({ mediaStream, setSample }) => {
+export const Recorder = ({ mediaStream, audioCTX, setSample }) => {
 	const {
 		recorder,
 		isRecording,
@@ -12,6 +13,7 @@ export const Recorder = ({ mediaStream, setSample }) => {
 		setSample(sample)
 	}, [sample, setSample])
 
+
 	return (
 		<div>
 			<button
@@ -19,6 +21,7 @@ export const Recorder = ({ mediaStream, setSample }) => {
 					if (recorder) {
 						if (!isRecording) {
 							recorder.start(10)
+							setSample(null)
 						} else {
 							recorder.stop()
 						}
@@ -27,6 +30,7 @@ export const Recorder = ({ mediaStream, setSample }) => {
 			>
 				{ isRecording ? 'stop recording' : 'start recording' }
 			</button>
+			{ isRecording && <LiveWaveForm audioCTX={ audioCTX } mediaStream={ mediaStream }/> }
 		</div>
 	)
 }

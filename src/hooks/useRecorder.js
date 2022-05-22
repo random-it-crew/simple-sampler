@@ -1,3 +1,4 @@
+import { MediaRecorder } from 'extendable-media-recorder'
 import { useEffect, useRef, useState } from 'react'
 
 export default function useRecorder({ mediaStream, onDataAvailable }) {
@@ -8,9 +9,7 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 
 	useEffect(() => {
 		const options = {
-			mimeType: 'audio/webm',
-			bufferSize: 2048,
-			sampleRate: 44100
+			mimeType: 'audio/wav'
 		}
 
 		let cleanup

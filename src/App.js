@@ -8,11 +8,11 @@ import { Recorder } from './components/Recorder'
 export const App = () => {
 	const [audioContext] = useState(createAudioContext)
 	const [sample, setSample] = useState(null)
-	const mediaStream = useMediaStream()
+	const mediaStream = useMediaStream(audioContext)
 
 	return (
 		<div>
-			<Recorder mediaStream={ mediaStream } setSample={ setSample }/>
+			<Recorder audioCTX={audioContext} mediaStream={ mediaStream } setSample={ setSample }/>
 			{ sample !== null && <a href={ sample.blobURL } download="sample.webm">download</a> }
 			{ sample && <SamplePlayer sample={ sample } audioCTX={ audioContext }/> }
 		</div>
