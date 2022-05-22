@@ -1,11 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import { StaticWaveForm } from './StaticWaveForm'
 import { Sound } from '../../utils/Sound'
+import { PlayButton } from './PlayButton'
+import { ProgressBar } from './ProgressBar'
+import styled from 'styled-components'
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-content: center;
+  
+  
+  @media screen and (min-width: 415px){
+    max-height: calc(45px + 2vmin);
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex: 1 1 0;
+    -ms-flex: 1 1 0;
+    flex: 1 1 0;
+  }
+`
+
+const Button = styled.button`
+	padding: 1vh;
+	margin: 1vh;
+`
 
 export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [currentSample, setCurrentSample] = useState(null)
 	const [playerStatus, setPlayerStatus] = useState('stopped')
-	const [label, setLabel] = useState('play')
 
 	useEffect(() => {
 		let cleanup
@@ -35,38 +62,18 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 		}
 	}, [audioCTX, sample])
 
-	useEffect(() => {
-		const getLabel = () => {
-			console.log(playerStatus)
-
-			if (playerStatus === 'paused') {
-				return 'resume'
-			}
-			if (playerStatus !== 'playing')
-				return 'play'
-			if (playerStatus === 'playing')
-				return 'pause'
-		}
-
-		setLabel(getLabel())
-	}, [playerStatus])
 
 	return (
 		<div>
 			<StaticWaveForm sample={ sample } audioCTX={ audioCTX }/>
-			<button onClick={ async () => {
-				if (currentSample) {
-					if (playerStatus === 'playing') {
-						currentSample.pause()
-					} else if (playerStatus === 'paused' || playerStatus === 'stopped') {
-						console.log(playerStatus)
-						await currentSample.play()
-						setPlayerStatus('playing')
-					}
-				}
-			} }>
-				{ label }
-			</button>
+			<ProgressBar sample={ currentSample }/>
+			<ButtonContainer>
+				<PlayButton sample={ currentSample } playerStatus={ playerStatus } setPlayerStatus={ setPlayerStatus }/>
+				{ sample !== null && <a href={ sample.blobURL } download="sample.wav">
+					<Button>download</Button>
+				</a> }
+			</ButtonContainer>
+
 		</div>
 	)
 }

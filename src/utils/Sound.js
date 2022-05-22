@@ -9,18 +9,30 @@ export class Sound {
 		this.onEnded = onEnded
 		this.onPlay = onPlay
 		this.onPause = onPause
+
+		this.getSampleDuration(sample)
 	}
 
-	play = async () => {
+	getSampleDuration = async (sample) => {
+		const buffer = await (new Response(sample.blob)).arrayBuffer()
+		const audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
+		this.duration = audioBuffer.duration
+	}
+
+	play = async (offset) => {
 		const buffer = await (new Response(this.sample.blob)).arrayBuffer()
 		const audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
 		this.source = this.audioCTX.context.createBufferSource()
 
 		this.source.buffer = audioBuffer
 		this.source.connect(this.audioCTX.context.destination)
-		this.source.start(0, this.elapsed)
 
-		this.startedAt = this.audioCTX.context.currentTime
+		if (offset)
+			this.source.start(0, offset)
+		else
+			this.source.start(0, this.elapsed)
+
+		this.startedAt = this.audioCTX.context.currentTime - this.elapsed
 
 		this.source.onended = () => {
 			if (this.playing) {
@@ -54,7 +66,7 @@ export class Sound {
 	}
 
 	getElapsedTime = () => {
-		if (this.elapsed)
+		if (!this.playing && this.elapsed)
 			return this.elapsed
 		else if (this.startedAt)
 			return this.audioCTX.context.currentTime - this.startedAt
@@ -62,8 +74,8 @@ export class Sound {
 	}
 
 	getDuration = () => {
-		if (this.source.buffer)
-			return this.source.buffer.duration
+		if (this.duration)
+			return this.duration
 		return 0
 	}
 }

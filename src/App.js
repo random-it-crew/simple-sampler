@@ -14,9 +14,6 @@ export const App = () => {
 		<div>
 			<Recorder audioCTX={audioContext} mediaStream={ mediaStream } setSample={ setSample }/>
 			{ sample && <SamplePlayer sample={ sample } audioCTX={ audioContext }/> }
-			{ sample !== null && <a href={ sample.blobURL } download="sample.wav">
-				<button>download</button>
-			</a> }
 		</div>
 	)
 }
