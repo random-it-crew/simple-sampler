@@ -45,7 +45,14 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 			}
 		}
 
-	}, [isPlaying, played, source])
+		return () => {
+			if (source && isPlaying && played) {
+				source.stop()
+				setSource(null)
+				setPlayed(false)
+			}
+		}
+	}, [isPlaying, played, source, sample])
 
 	return (
 		<div>

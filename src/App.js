@@ -13,8 +13,10 @@ export const App = () => {
 	return (
 		<div>
 			<Recorder audioCTX={audioContext} mediaStream={ mediaStream } setSample={ setSample }/>
-			{ sample !== null && <a href={ sample.blobURL } download="sample.webm">download</a> }
 			{ sample && <SamplePlayer sample={ sample } audioCTX={ audioContext }/> }
+			{ sample !== null && <a href={ sample.blobURL } download="sample.wav">
+				<button>download</button>
+			</a> }
 		</div>
 	)
 }

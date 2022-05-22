@@ -64,7 +64,7 @@ export const LiveWaveForm = ({ mediaStream, audioCTX }) => {
 		return () => {
 			cancelAnimationFrame(drawVisual)
 		}
-	}, [audioCTX, canvasRef, mediaStream])
+	}, [audioCTX, canvasRef, mediaStream, width])
 
 	return <canvas ref={ setCanvasRef } height={ 200 } width={ width }/>
 }

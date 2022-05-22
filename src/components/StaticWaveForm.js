@@ -77,7 +77,7 @@ export const StaticWaveForm = ({ audioCTX, sample }) => {
 		}
 
 		drawAudio()
-	}, [audioCTX, sample, canvasRef])
+	}, [audioCTX, sample, canvasRef, windowWidth])
 
 	return <canvas ref={ setCanvasRef } height={ 200 } width={ windowWidth }/>
 }
