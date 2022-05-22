@@ -5,7 +5,7 @@ import { PlayButton } from './PlayButton'
 import { ProgressBar } from './ProgressBar'
 import styled from 'styled-components'
 
-const ButtonContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1 1 0;
@@ -30,28 +30,32 @@ const Button = styled.button`
 	margin: 1vh;
 `
 
+const Input = styled.input`
+	padding: 1vh;
+	margin: 1vh;
+`
+
 export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [currentSample, setCurrentSample] = useState(null)
 	const [playerStatus, setPlayerStatus] = useState('stopped')
+	const [filename, setFilename] = useState(sample.filename)
 
 	useEffect(() => {
 		let cleanup
 
 		const createSound = async () => {
-			if (audioCTX && sample) {
-				const onPause = () => setPlayerStatus('paused')
-				const onPlay = () => setPlayerStatus('playing')
-				const onEnded = () => setPlayerStatus('stopped')
+			const onPause = () => setPlayerStatus('paused')
+			const onPlay = () => setPlayerStatus('playing')
+			const onEnded = () => setPlayerStatus('stopped')
 
-				const sound = new Sound(audioCTX, sample, onPlay, onPause, onEnded)
+			const sound = new Sound(audioCTX, sample, onPlay, onPause, onEnded)
 
 
-				cleanup = () => {
-					sound.stop()
-				}
-
-				setCurrentSample(sound)
+			cleanup = () => {
+				sound.stop()
 			}
+
+			setCurrentSample(sound)
 		}
 
 		createSound()
@@ -67,12 +71,22 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 		<div>
 			<StaticWaveForm sample={ sample } audioCTX={ audioCTX }/>
 			<ProgressBar sample={ currentSample }/>
-			<ButtonContainer>
+			<Container>
 				<PlayButton sample={ currentSample } playerStatus={ playerStatus } setPlayerStatus={ setPlayerStatus }/>
-				{ sample !== null && <a href={ sample.blobURL } download="sample.wav">
+				<a
+					href={ sample.blobURL }
+					download={ filename.indexOf('.wav') !== -1 ? filename : filename + '.wav' }
+				>
 					<Button>download</Button>
-				</a> }
-			</ButtonContainer>
+				</a>
+				<Input
+					type={ 'text' }
+					value={ filename }
+					onChange={ (event) => {
+						setFilename(event.target.value)
+					} }
+				/>
+			</Container>
 
 		</div>
 	)

@@ -39,7 +39,8 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 					startTime: startTime,
 					stopTime: Date.now(),
 					options: options,
-					blobURL: window.URL.createObjectURL(blob)
+					blobURL: window.URL.createObjectURL(blob),
+					filename: 'sample.wav'
 				}
 
 				console.log(blobObject)
