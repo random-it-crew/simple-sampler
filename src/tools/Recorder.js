@@ -30,7 +30,6 @@ export class Recorder {
 			this.mediaRecorder.stop()
 
 			this.device.getAudioTracks().forEach(track => track.stop())
-			this.mediaRecorder = null
 			this.analyser = this.audioContext.createAnalyser()
 		}
 	}
@@ -72,9 +71,6 @@ export class Recorder {
 			this.onStartCallback()
 		}
 
-
-		console.log(this.device)
-
 		this.mediaRecorder.onstop = this.onStopRecorder
 
 		this.mediaRecorder.ondataavailable = this.onDataAvailable
@@ -82,7 +78,7 @@ export class Recorder {
 		this.audioContext.resume().then(() => {
 			this.analyser = this.audioContext.createAnalyser()
 
-			this.mediaRecorder.start(10)
+			this.mediaRecorder.start()
 			const source = this.audioContext.createMediaStreamSource(this.device)
 			source.connect(this.analyser)
 		})

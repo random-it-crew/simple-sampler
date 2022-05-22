@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import createAudioContext from './utils/createAudioContext'
-import { Recorder } from './tools/Recorder'
 
 
 export const App = () => {
@@ -8,7 +7,7 @@ export const App = () => {
 	const [device, setDevice] = useState(null)
 	const [recorder, setRecorder] = useState(null)
 	const [sample, setSample] = useState(null)
-	const [currentChunks, setCurrentChunks] = useState([])
+	const [recording, setRecording] = useState(false)
 
 
 	useEffect(() => {
@@ -35,32 +34,49 @@ export const App = () => {
 
 
 	useEffect(() => {
-		if (audioContext && device) {
-			setRecorder(
-				new Recorder(
-					audioContext,
-					device,
-					() => {
-						console.log('started recording')
-						setCurrentChunks([])
-					},
-					() => {
-						console.log('stopped recording')
-					},
-					(blobObj) => {
-						console.log('onSave : ', blobObj)
-						setSample(blobObj)
-					},
-					(chunks) => {
-						console.log('onData')
-						setCurrentChunks(prev_chunks => {
+		let startTime = null
+		let currentChunks = []
+		
+		const options = {
+			mimeType: 'audio/webm',
+			bufferSize: 2048,
+			sampleRate: 44100
+		}
 
-							prev_chunks.push(chunks)
-							return prev_chunks
-						})
-					}
-				)
-			)
+		if (audioContext && device) {
+			const mediaRecorder = new MediaRecorder(device, options)
+
+			mediaRecorder.onstart = () => {
+				startTime = Date.now()
+				currentChunks = []
+			}
+
+			mediaRecorder.onstop = () => {
+				console.log('stopped recording')
+				const blob = new Blob(currentChunks, { type: 'audio/webm' })
+
+				let blobObject = {
+					blob,
+					startTime: startTime,
+					stopTime: Date.now(),
+					options: options,
+					blobURL: window.URL.createObjectURL(blob)
+				}
+
+				console.log(blobObject)
+
+				startTime = null
+				setSample(blobObject)
+			}
+
+			mediaRecorder.ondataavailable = (event) => {
+				console.log('data_available')
+
+				if (event.data.size > 0) {
+					currentChunks.push(event.data)
+				}
+			}
+			setRecorder(mediaRecorder)
 		}
 	}, [audioContext, device])
 
@@ -69,17 +85,18 @@ export const App = () => {
 			<button
 				onClick={ () => {
 					if (recorder) {
-						if (recorder.recording) {
-							recorder.stopRecording()
+						if (!recording) {
+							recorder.start(10)
 						} else {
-							recorder.startRecording()
+							recorder.stop()
 						}
+						setRecording(!recording)
 					}
 				} }
 			>
 				start / stop recording
 			</button>
-			{ sample !== null && <a href={sample.blobURL} download='sample.webm'>download</a> }
+			{ sample !== null && <a href={ sample.blobURL } download="sample.webm">download</a> }
 		</div>
 	)
 }
