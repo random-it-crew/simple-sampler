@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import useMediaStream from './hooks/useMediaStream'
 import useRecorder from './hooks/useRecorder'
 

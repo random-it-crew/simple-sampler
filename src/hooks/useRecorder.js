@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 
 export default function useRecorder({ mediaStream, onDataAvailable }) {
 	const [recorder, setRecorder] = useState(null)
-	const [startTime, setStartTime] = useState(null)
 	const [isRecording, setIsRecording] = useState(false)
 	const [sample, setSample] = useState(null)
 	const chunks = useRef([])
@@ -15,6 +14,7 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 		}
 
 		let cleanup
+		let startTime
 
 		if (mediaStream) {
 			const mediaRecorder = new MediaRecorder(mediaStream, options)
@@ -26,7 +26,7 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 
 			mediaRecorder.onstart = () => {
 				console.log('started recording')
-				setStartTime(Date.now())
+				startTime = Date.now()
 				chunks.current = []
 				setIsRecording(true)
 			}
@@ -46,13 +46,11 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 				console.log(blobObject)
 
 				setIsRecording(false)
-				setStartTime(null)
+				startTime = null
 				setSample(blobObject)
 			}
 
 			mediaRecorder.ondataavailable = (event) => {
-				console.log('data_available')
-
 				onDataAvailable?.(event)
 
 				if (event.data.size > 0) {
@@ -66,11 +64,10 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 			if (typeof cleanup === 'function')
 				cleanup()
 		}
-	}, [mediaStream, onDataAvailable, startTime])
+	}, [mediaStream, onDataAvailable])
 
 	return {
 		recorder,
-		startTime,
 		isRecording,
 		sample
 	}
