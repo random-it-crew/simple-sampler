@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { StaticWaveForm } from './StaticWaveForm'
 
 export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [isPlaying, setIsPlaying] = useState(false)
@@ -48,6 +49,7 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 
 	return (
 		<div>
+			<StaticWaveForm sample={ sample } audioCTX={ audioCTX }/>
 			<button onClick={ () => setIsPlaying(!isPlaying) }>
 				{ isPlaying ? 'stop' : 'play' }
 			</button>
