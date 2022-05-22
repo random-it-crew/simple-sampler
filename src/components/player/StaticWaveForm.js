@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 
-export const StaticWaveForm = ({ audioCTX, sample, onWaveFormClick }) => {
+export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClick }) => {
 	const [canvasRef, setCanvasRef] = useState(null)
+	const [cursors, setCursors] = []
 	const { width: windowWidth } = useWindowDimensions()
 
 	useEffect(() => {
-		if (!canvasRef || !audioCTX || !sample)
+		if (!canvasRef || !audioCTX || !sample || !currentSample)
 			return
 
 		let canvasCtx = canvasRef.getContext('2d')
@@ -55,6 +56,8 @@ export const StaticWaveForm = ({ audioCTX, sample, onWaveFormClick }) => {
 
 				drawLineSegment(canvasCtx, x, height, width, (i + 1) % 2)
 			}
+
+
 		}
 
 		const drawLineSegment = (ctx, x, height, width, isEven) => {
@@ -77,7 +80,7 @@ export const StaticWaveForm = ({ audioCTX, sample, onWaveFormClick }) => {
 		}
 
 		drawAudio()
-	}, [audioCTX, sample, canvasRef, windowWidth])
+	}, [audioCTX, sample, canvasRef, windowWidth, currentSample])
 
 	return (
 		<canvas ref={ setCanvasRef } height={ 200 } width={ windowWidth } onClick={

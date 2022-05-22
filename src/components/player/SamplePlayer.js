@@ -57,12 +57,19 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 
 	return (
 		<div>
-			<StaticWaveForm sample={ sample } audioCTX={ audioCTX } onWaveFormClick={ (progress) => {
-				currentSample.setOffset(currentSample.getDuration() * progress)
-			}}/>
-			<ProgressBar sample={ currentSample } onProgressBarClick={ (progress) => {
-				currentSample.setOffset(currentSample.getDuration() * progress)
-			}}/>
+			<StaticWaveForm
+				sample={ sample }
+				audioCTX={ audioCTX }
+				currentSample={ currentSample }
+				onWaveFormClick={ (progress) => {
+					currentSample.setOffset(currentSample.getDuration() * progress)
+				} }/>
+			<ProgressBar
+				sample={ currentSample }
+				onProgressBarClick={ (progress) => {
+					console.log(progress, currentSample.getDuration() * progress)
+					currentSample.setOffset(currentSample.getDuration() * progress)
+				} }/>
 			<Container>
 				<PlayButton sample={ currentSample } playerStatus={ playerStatus }/>
 				<a

@@ -19,11 +19,12 @@ export class Sound {
 		this.duration = audioBuffer.duration
 	}
 
-	setOffset = (offset) => {
+	setOffset = async (offset) => {
 		this.elapsed = offset
 
-		if (this.playing)
-			this.play()
+		if (this.playing) {
+			await this.play()
+		}
 	}
 
 	play = async () => {
