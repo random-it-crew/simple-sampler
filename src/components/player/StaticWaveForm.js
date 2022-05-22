@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import useWindowDimensions from '../hooks/useWindowDimensions'
+import useWindowDimensions from '../../hooks/useWindowDimensions'
 
 export const StaticWaveForm = ({ audioCTX, sample }) => {
 	const [canvasRef, setCanvasRef] = useState(null)

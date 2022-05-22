@@ -1,4 +1,4 @@
-import useWindowDimensions from '../hooks/useWindowDimensions'
+import useWindowDimensions from '../../hooks/useWindowDimensions'
 import React, { useEffect, useState } from 'react'
 
 export const LiveWaveForm = ({ mediaStream, audioCTX }) => {

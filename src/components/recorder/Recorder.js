@@ -1,4 +1,4 @@
-import useRecorder from '../hooks/useRecorder'
+import useRecorder from '../../hooks/useRecorder'
 import React, { useEffect } from 'react'
 import { LiveWaveForm } from './LiveWaveForm'
 

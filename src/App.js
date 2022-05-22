@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import useMediaStream from './hooks/useMediaStream'
-import { SamplePlayer } from './components/SamplePlayer'
+import { SamplePlayer } from './components/player/SamplePlayer'
 import createAudioContext from './utils/createAudioContext'
-import { Recorder } from './components/Recorder'
+import { Recorder } from './components/recorder/Recorder'
 
 
 export const App = () => {
