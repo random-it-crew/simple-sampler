@@ -41,28 +41,17 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [filename, setFilename] = useState(sample.filename)
 
 	useEffect(() => {
-		let cleanup
+		const onPause = () => setPlayerStatus('paused')
+		const onPlay = () => setPlayerStatus('playing')
+		const onEnded = () => setPlayerStatus('stopped')
 
-		const createSound = async () => {
-			const onPause = () => setPlayerStatus('paused')
-			const onPlay = () => setPlayerStatus('playing')
-			const onEnded = () => setPlayerStatus('stopped')
-
-			const sound = new Sound(audioCTX, sample, onPlay, onPause, onEnded)
+		const sound = new Sound(audioCTX, sample, onPlay, onPause, onEnded)
 
 
-			cleanup = () => {
-				sound.stop()
-			}
-
-			setCurrentSample(sound)
-		}
-
-		createSound()
+		setCurrentSample(sound)
 
 		return () => {
-			if (typeof cleanup === 'function')
-				cleanup()
+			sound.stop()
 		}
 	}, [audioCTX, sample])
 
@@ -72,7 +61,7 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 			<StaticWaveForm sample={ sample } audioCTX={ audioCTX }/>
 			<ProgressBar sample={ currentSample }/>
 			<Container>
-				<PlayButton sample={ currentSample } playerStatus={ playerStatus } setPlayerStatus={ setPlayerStatus }/>
+				<PlayButton sample={ currentSample } playerStatus={ playerStatus }/>
 				<a
 					href={ sample.blobURL }
 					download={ filename.indexOf('.wav') !== -1 ? filename : filename + '.wav' }

@@ -6,7 +6,7 @@ const Button = styled.button`
 	margin: 1vh;
 `
 
-export const PlayButton = ({sample, playerStatus, setPlayerStatus}) => {
+export const PlayButton = ({sample, playerStatus}) => {
 	const [label, setLabel] = useState('play')
 
 	useEffect(() => {
