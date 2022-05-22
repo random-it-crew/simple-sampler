@@ -1,32 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import useMediaStream from './hooks/useMediaStream'
-import useRecorder from './hooks/useRecorder'
+import { SamplePlayer } from './components/SamplePlayer'
+import createAudioContext from './utils/createAudioContext'
+import { Recorder } from './components/Recorder'
 
 
 export const App = () => {
+	const [audioContext] = useState(createAudioContext)
+	const [sample, setSample] = useState(null)
 	const mediaStream = useMediaStream()
-	const {
-		recorder,
-		isRecording,
-		sample
-	} = useRecorder({ mediaStream })
 
 	return (
 		<div>
-			<button
-				onClick={ () => {
-					if (recorder) {
-						if (!isRecording) {
-							recorder.start(10)
-						} else {
-							recorder.stop()
-						}
-					}
-				} }
-			>
-				start / stop recording
-			</button>
+			<Recorder mediaStream={ mediaStream } setSample={ setSample }/>
 			{ sample !== null && <a href={ sample.blobURL } download="sample.webm">download</a> }
+			{ sample && <SamplePlayer sample={ sample } audioCTX={ audioContext }/> }
 		</div>
 	)
 }
