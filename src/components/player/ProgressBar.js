@@ -87,9 +87,14 @@ export const ProgressBar = ({ sample, onProgressBarClick }) => {
 	return (
 		<div>
 			<HorizontalContainer>
-				<Container onClick={ onProgressBarClick }>
-					<Filler progress={ progress } >
-						<Dot />
+				<Container onClick={ (event) => {
+					const rect = event.currentTarget.getBoundingClientRect()
+					const x = event.clientX - rect.left
+
+					onProgressBarClick(x / (rect.right - rect.left))
+				} } id={ 'container' }>
+					<Filler progress={ progress } id={ 'filler' }>
+						<Dot/>
 					</Filler>
 				</Container>
 				<Label>

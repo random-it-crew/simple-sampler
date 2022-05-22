@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 
-export const StaticWaveForm = ({ audioCTX, sample }) => {
+export const StaticWaveForm = ({ audioCTX, sample, onWaveFormClick }) => {
 	const [canvasRef, setCanvasRef] = useState(null)
 	const { width: windowWidth } = useWindowDimensions()
 
@@ -36,8 +36,8 @@ export const StaticWaveForm = ({ audioCTX, sample }) => {
 		const draw = (normalizedData) => {
 			// set up the canvas
 
-  			canvasRef.width = canvasRef.offsetWidth
-  			canvasRef.height = canvasRef.offsetHeight
+			canvasRef.width = canvasRef.offsetWidth
+			canvasRef.height = canvasRef.offsetHeight
 			canvasCtx.fillStyle = 'rgb(255, 23, 23)'
 			canvasCtx.fillRect(0, 0, canvasRef.width, canvasRef.height)
 			canvasCtx.translate(0, canvasRef.offsetHeight / 2)
@@ -79,5 +79,14 @@ export const StaticWaveForm = ({ audioCTX, sample }) => {
 		drawAudio()
 	}, [audioCTX, sample, canvasRef, windowWidth])
 
-	return <canvas ref={ setCanvasRef } height={ 200 } width={ windowWidth }/>
+	return (
+		<canvas ref={ setCanvasRef } height={ 200 } width={ windowWidth } onClick={
+			(event) => {
+				const rect = event.currentTarget.getBoundingClientRect()
+				const x = event.clientX - rect.left
+
+				onWaveFormClick(x / (rect.right - rect.left))
+			}
+		}/>
+	)
 }
