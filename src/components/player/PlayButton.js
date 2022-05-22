@@ -11,8 +11,6 @@ export const PlayButton = ({sample, playerStatus}) => {
 
 	useEffect(() => {
 		const getLabel = () => {
-			console.log(playerStatus)
-
 			if (playerStatus === 'paused') {
 				return 'resume'
 			}

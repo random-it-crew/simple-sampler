@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const Container = styled.div`
     height: 20px;
-    width: 98%;
+    width: 90%;
     background-color: #e0e0de;
     border-radius: 50px;
     margin: 10px;
@@ -22,7 +22,40 @@ const Label = styled.span`
     font-weight: bold;
     font-size: calc(5px + 1vmin);
     vertical-align: top;
+	border-radius: 50px;
+    margin: 10px;
+    height: 20px;
 `
+
+const HorizontalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-content: center;
+  
+  
+  @media screen and (min-width: 415px){
+    max-height: calc(45px + 2vmin);
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex: 1 1 0;
+    -ms-flex: 1 1 0;
+    flex: 1 1 0;
+  }
+`
+
+
+const Dot = styled.span`
+  height: 20px;
+  width: 20px;
+  background-color: gray;
+  border-radius: 50%;
+  display: inline-block;
+`
+
 
 export const ProgressBar = ({ sample }) => {
 	const [progress, setProgress] = useState(0)
@@ -55,13 +88,17 @@ export const ProgressBar = ({ sample }) => {
 
 	return (
 		<div>
-			<Container>
-				<Filler progress={ progress }>
-					<Label>
-						{ elapsed.toFixed(1) }/{ sample.getDuration().toFixed(1) }s
-					</Label>
-				</Filler>
-			</Container>
+			<HorizontalContainer>
+				<Container>
+					<Filler progress={ progress } >
+						<Dot />
+					</Filler>
+				</Container>
+				<Label>
+					{ elapsed.toFixed(1) }/{ sample.getDuration().toFixed(1) }s
+				</Label>
+			</HorizontalContainer>
+
 		</div>
 	)
 }
