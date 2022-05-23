@@ -67,7 +67,6 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 			<ProgressBar
 				sample={ currentSample }
 				onProgressBarClick={ (progress) => {
-					console.log(progress, currentSample.getDuration() * progress)
 					currentSample.setOffset(currentSample.getDuration() * progress)
 				} }/>
 			<Container>
