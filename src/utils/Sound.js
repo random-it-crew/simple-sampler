@@ -7,7 +7,8 @@ export class Sound {
 		this.elapsed = 0
 
 		this.startPoint = 0
-		this.endPoint = null
+		this.endPoint = 1
+		this.loop = false
 
 		this.onEnded = onEnded
 		this.onPlay = onPlay
@@ -42,20 +43,28 @@ export class Sound {
 			this.audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
 		}
 
+
 		this.source = this.audioCTX.context.createBufferSource()
 		this.source.buffer = this.audioBuffer
 		this.source.connect(this.audioCTX.context.destination)
-		this.source.start(0, this.elapsed + this.startPoint, this.getDuration())
+
+		this.source.start(0, this.elapsed + (this.duration * this.startPoint), (this.getDuration() - this.elapsed) || 0)
 		this.startedAt = this.audioCTX.context.currentTime - this.elapsed
 		this.status = 'playing'
 
 		this.source.onended = () => {
-
 			if (this.status === 'playing' && this.source)
 				this.stop()
 
 			if (this.status === 'stopped' && this.onEnded) {
 				this.onEnded()
+			}
+
+			console.log(this.loop, this.status)
+
+			if (this.loop && this.status === 'stopped') {
+				this.status = 'playing'
+				this.setOffset(0)
 			}
 		}
 
@@ -92,9 +101,17 @@ export class Sound {
 		return 0
 	}
 
+	getCursorPosition = () => {
+		return (this.duration * this.startPoint + this.getElapsedTime()) / this.duration
+	}
+
 	getDuration = () => {
-		if (this.duration)
-			return this.duration - this.startPoint - (this.endPoint ? this.endPoint : 0)
+		if (this.duration) {
+			const start = this.duration * this.startPoint
+			const end = this.duration * this.endPoint
+
+			return end - start
+		}
 		return 0
 	}
 }

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 const Button = styled.button`
 	padding: 1vh;
-	margin: 1vh;
+	margin: 2vh;
 `
 
 const Container = styled.div`

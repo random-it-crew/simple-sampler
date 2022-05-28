@@ -11,10 +11,13 @@ const CanvasContainer = styled.div`
 `
 
 
-export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove }) => {
+export const StaticWaveForm = ({
+								   audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove, points
+}) => {
 	const [canvasRef, setCanvasRef] = useState(null)
 	const [canvasCtx, setCanvasCtx] = useState(null)
 	const [imageData, setImageData] = useState(null)
+	const [start, end] = points
 	const { width: windowWidth } = useWindowDimensions()
 
 	useEffect(() => {
@@ -45,10 +48,26 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 		const draw = (normalizedData) => {
 			// set up the canvas
 
+
 			canvasRef.width = canvasRef.offsetWidth
 			canvasRef.height = canvasRef.offsetHeight
-			canvasCtx.fillStyle = 'rgb(255, 23, 23)'
-			canvasCtx.fillRect(0, 0, canvasRef.width, canvasRef.height)
+
+			const sampleStart = canvasRef.width * start
+			const sampleEnd = canvasRef.width - (sampleStart + canvasRef.width * (1 - end))
+			const endWidth = sampleEnd + sampleStart
+
+			// fill up to starting point
+			canvasCtx.fillStyle = 'rgb(44, 55, 44)'
+			canvasCtx.fillRect(0, 0, sampleStart, canvasRef.height)
+
+			// fill playable area
+			canvasCtx.fillStyle = 'rgb(66, 66, 88)'
+			canvasCtx.fillRect(canvasRef.width * start, 0, sampleEnd, canvasRef.height)
+
+			// fill up to end point
+			canvasCtx.fillStyle = 'rgb(44, 55, 44)'
+			canvasCtx.fillRect(endWidth, 0, canvasRef.width - endWidth, canvasRef.height)
+
 			canvasCtx.translate(0, canvasRef.offsetHeight / 2)
 
 			const width = canvasRef.offsetWidth / normalizedData.length
@@ -87,7 +106,7 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 		}
 
 		drawAudio()
-	}, [audioCTX, sample, canvasRef, windowWidth, canvasCtx])
+	}, [audioCTX, sample, canvasRef, windowWidth, canvasCtx, start, end])
 
 
 	useEffect(() => {
@@ -105,11 +124,9 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 		let frameID
 		const updateCursor = () => {
 			frameID = requestAnimationFrame(updateCursor)
-
-
 			canvasCtx.putImageData(imageData, 0, 0)
 
-			const cursorPos = (currentSample.getElapsedTime() / currentSample.getDuration()) * canvasRef.width
+			const cursorPos = currentSample.getCursorPosition() * canvasRef.width
 			canvasCtx.lineWidth = 3 // how thick the line is
 			canvasCtx.strokeStyle = 'rgb(75, 75, 75)'
 			canvasCtx.beginPath()

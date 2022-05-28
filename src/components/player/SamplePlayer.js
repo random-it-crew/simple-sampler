@@ -5,6 +5,7 @@ import { PlayButton } from './PlayButton'
 import { ProgressBar } from './ProgressBar'
 import styled from 'styled-components'
 import { MultiRangeSlider } from '../MultiRangeSlider'
+import { LoopCheckBox } from './LoopCheckBox'
 
 const Container = styled.div`
   display: flex;
@@ -41,7 +42,7 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [playerStatus, setPlayerStatus] = useState('stopped')
 	const [filename, setFilename] = useState(sample.filename)
 	const [mouseDown, setMouseDown] = useState(false)
-	const [points, setPoints] = useState([0])
+	const [points, setPoints] = useState([0, 1])
 
 	useEffect(() => {
 		const onPause = () => setPlayerStatus('paused')
@@ -61,14 +62,8 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 		if (!currentSample)
 			return
 
-		if (points.length === 1) {
-			currentSample.startPoint = points[0]
-			currentSample.endPoint = null
-		}
-		else if (points.length === 2) {
-			currentSample.startPoint = points[0]
-			currentSample.endPoint = points[2]
-		}
+		currentSample.startPoint = points[0]
+		currentSample.endPoint = points[1]
 	}, [currentSample, points])
 
 	const onMouseMove = (progress) => {
@@ -80,12 +75,27 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 		}
 	}
 
+	const onWaveCLick = (progress) => {
+		if (progress < points[0]) {
+			currentSample.setOffset(0)
+		} else if (progress > points[1])
+			currentSample.setOffset(currentSample.getDuration())
+		else
+			currentSample.setOffset(currentSample.getDuration() * progress)
+	}
+
 	return (
 		<div>
 			<MultiRangeSlider
-				min={0}
-				max={100}
-				onChange={ (data) => console.log(data) }
+				min={ 0 }
+				max={ 100 }
+				onChange={ (data) => {
+					const { min, max } = data
+
+					if (min / 100 !== points[0] || max / 100 !== points[1])
+
+						setPoints([min / 100, max / 100])
+				} }
 			/>
 			<StaticWaveForm
 				sample={ sample }
@@ -93,9 +103,8 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 				setMouseDown={ setMouseDown }
 				onMouseMove={ onMouseMove }
 				currentSample={ currentSample }
-				onWaveFormClick={ (progress) => {
-					currentSample.setOffset(currentSample.getDuration() * progress)
-				} }/>
+				points={ points }
+				onWaveFormClick={ onWaveCLick }/>
 			<ProgressBar
 				sample={ currentSample }
 				setMouseDown={ setMouseDown }
@@ -105,6 +114,11 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 				} }/>
 			<Container>
 				<PlayButton sample={ currentSample } playerStatus={ playerStatus }/>
+				<LoopCheckBox onChange={ (loop) => {
+					console.log(currentSample, loop)
+					if (currentSample)
+						currentSample.loop = loop
+				} } />
 				<a
 					href={ sample.blobURL }
 					download={ filename.indexOf('.wav') !== -1 ? filename : filename + '.wav' }
