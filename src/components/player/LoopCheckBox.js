@@ -16,7 +16,7 @@ export const LoopCheckBox = ({ onChange }) => {
 
 	useEffect(() => {
 		onChange(value)
-	}, [value])
+	}, [value, onChange])
 
 	return (
 		<Container>
