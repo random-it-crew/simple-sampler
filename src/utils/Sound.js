@@ -6,6 +6,9 @@ export class Sound {
 		this.startedAt = 0
 		this.elapsed = 0
 
+		this.startPoint = 0
+		this.endPoint = null
+
 		this.onEnded = onEnded
 		this.onPlay = onPlay
 		this.onPause = onPause
@@ -42,7 +45,7 @@ export class Sound {
 		this.source = this.audioCTX.context.createBufferSource()
 		this.source.buffer = this.audioBuffer
 		this.source.connect(this.audioCTX.context.destination)
-		this.source.start(0, this.elapsed)
+		this.source.start(0, this.elapsed + this.startPoint, this.getDuration())
 		this.startedAt = this.audioCTX.context.currentTime - this.elapsed
 		this.status = 'playing'
 
@@ -91,7 +94,7 @@ export class Sound {
 
 	getDuration = () => {
 		if (this.duration)
-			return this.duration
+			return this.duration - this.startPoint - (this.endPoint ? this.endPoint : 0)
 		return 0
 	}
 }

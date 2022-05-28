@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
+import styled from 'styled-components'
+
+
+const padding = 10
+
+const CanvasContainer = styled.div`
+	padding-left: ${padding}px;
+	padding-right: ${padding}px;
+`
+
 
 export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove }) => {
 	const [canvasRef, setCanvasRef] = useState(null)
-	const [canvasCtx, setCanavasCtx] = useState(null)
+	const [canvasCtx, setCanvasCtx] = useState(null)
 	const [imageData, setImageData] = useState(null)
 	const { width: windowWidth } = useWindowDimensions()
 
@@ -84,7 +94,7 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 		if (!canvasRef || !audioCTX || !sample || !currentSample)
 			return
 
-		setCanavasCtx(canvasRef.getContext('2d'))
+		setCanvasCtx(canvasRef.getContext('2d'))
 	}, [audioCTX, sample, canvasRef, currentSample])
 
 
@@ -118,27 +128,29 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 
 
 	return (
-		<canvas
-			ref={ setCanvasRef }
-			height={ 200 }
-			width={ windowWidth }
-			onMouseDown={ () => setMouseDown(true) }
-			onMouseUp={ () => setMouseDown(false) }
-			onMouseLeave={ () => setMouseDown(false) }
-			onMouseMove={ (event) => {
-				const rect = event.currentTarget.getBoundingClientRect()
-				const x = event.clientX - rect.left
-
-				onMouseMove(x / rect.right)
-			} }
-			onClick={
-				(event) => {
+		<CanvasContainer>
+			<canvas
+				ref={ setCanvasRef }
+				height={ 200 }
+				width={ windowWidth - (2 * padding) }
+				onMouseDown={ () => setMouseDown(true) }
+				onMouseUp={ () => setMouseDown(false) }
+				onMouseLeave={ () => setMouseDown(false) }
+				onMouseMove={ (event) => {
 					const rect = event.currentTarget.getBoundingClientRect()
 					const x = event.clientX - rect.left
 
-					onWaveFormClick(x / (rect.right - rect.left))
+					onMouseMove(x / (rect.right - rect.left))
+				} }
+				onClick={
+					(event) => {
+						const rect = event.currentTarget.getBoundingClientRect()
+						const x = event.clientX - rect.left
+
+						onWaveFormClick(x / (rect.right - rect.left))
+					}
 				}
-			}
-		/>
+			/>
+		</CanvasContainer>
 	)
 }

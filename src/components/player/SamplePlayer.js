@@ -4,6 +4,7 @@ import { Sound } from '../../utils/Sound'
 import { PlayButton } from './PlayButton'
 import { ProgressBar } from './ProgressBar'
 import styled from 'styled-components'
+import { MultiRangeSlider } from '../MultiRangeSlider'
 
 const Container = styled.div`
   display: flex;
@@ -40,6 +41,7 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [playerStatus, setPlayerStatus] = useState('stopped')
 	const [filename, setFilename] = useState(sample.filename)
 	const [mouseDown, setMouseDown] = useState(false)
+	const [points, setPoints] = useState([0])
 
 	useEffect(() => {
 		const onPause = () => setPlayerStatus('paused')
@@ -55,20 +57,36 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 		}
 	}, [audioCTX, sample])
 
+	useEffect(() => {
+		if (!currentSample)
+			return
+
+		if (points.length === 1) {
+			currentSample.startPoint = points[0]
+			currentSample.endPoint = null
+		}
+		else if (points.length === 2) {
+			currentSample.startPoint = points[0]
+			currentSample.endPoint = points[2]
+		}
+	}, [currentSample, points])
 
 	const onMouseMove = (progress) => {
 		if (!currentSample)
 			return
 
 		if (mouseDown) {
-
-
-			currentSample.setOffset(currentSample.getDuration() * (progress <= 0 ? 0 : progress))
+			currentSample.setOffset(currentSample.getDuration() * (progress <= 0 ? 0.01 : progress))
 		}
 	}
 
 	return (
 		<div>
+			<MultiRangeSlider
+				min={0}
+				max={100}
+				onChange={ (data) => console.log(data) }
+			/>
 			<StaticWaveForm
 				sample={ sample }
 				audioCTX={ audioCTX }
