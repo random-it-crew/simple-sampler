@@ -3,15 +3,13 @@ import useWindowDimensions from '../../hooks/useWindowDimensions'
 
 export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClick }) => {
 	const [canvasRef, setCanvasRef] = useState(null)
-	const [cursors, setCursors] = []
+	const [canvasCtx, setCanavasCtx] = useState(null)
+	const [imageData, setImageData] = useState(null)
 	const { width: windowWidth } = useWindowDimensions()
 
 	useEffect(() => {
-		if (!canvasRef || !audioCTX || !sample || !currentSample)
+		if (!canvasRef || !canvasCtx || !audioCTX || !sample || !currentSample)
 			return
-
-		let canvasCtx = canvasRef.getContext('2d')
-
 
 		const filterData = (audioBuffer) => {
 			const rawData = audioBuffer.getChannelData(0) // We only need to work with one channel of data
@@ -56,8 +54,7 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 
 				drawLineSegment(canvasCtx, x, height, width, (i + 1) % 2)
 			}
-
-
+			setImageData(canvasCtx.getImageData(0, 0, canvasRef.width, canvasRef.height))
 		}
 
 		const drawLineSegment = (ctx, x, height, width, isEven) => {
@@ -80,7 +77,45 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 		}
 
 		drawAudio()
-	}, [audioCTX, sample, canvasRef, windowWidth, currentSample])
+	}, [audioCTX, sample, canvasRef, windowWidth, currentSample, canvasCtx])
+
+
+	useEffect(() => {
+		if (!canvasRef || !audioCTX || !sample || !currentSample)
+			return
+
+		setCanavasCtx(canvasRef.getContext('2d'))
+	}, [audioCTX, sample, canvasRef, currentSample])
+
+
+	useEffect(() => {
+		if (!currentSample || !canvasCtx || !imageData)
+			return
+
+		let frameID
+		const updateCursor = () => {
+			frameID = requestAnimationFrame(updateCursor)
+
+
+			canvasCtx.putImageData(imageData, 0, 0)
+
+			const cursorPos = (currentSample.getElapsedTime() / currentSample.getDuration()) * canvasRef.width
+			canvasCtx.lineWidth = 3 // how thick the line is
+			canvasCtx.strokeStyle = 'rgb(75, 75, 75)'
+			canvasCtx.beginPath()
+
+			canvasCtx.moveTo(cursorPos, -canvasRef.height)
+			canvasCtx.lineTo(cursorPos, canvasRef.height)
+			canvasCtx.stroke()
+		}
+
+		updateCursor()
+
+		return () => {
+			cancelAnimationFrame(frameID)
+		}
+	}, [currentSample, canvasRef, canvasCtx, imageData])
+
 
 	return (
 		<canvas ref={ setCanvasRef } height={ 200 } width={ windowWidth } onClick={
