@@ -55,7 +55,7 @@ const Dot = styled.span`
   display: inline-block;
 `
 
-export const ProgressBar = ({ sample, onProgressBarClick }) => {
+export const ProgressBar = ({ sample, onProgressBarClick, setMouseDown, onMouseMove }) => {
 	const [progress, setProgress] = useState(0)
 	const [elapsed, setElapsed] = useState(0)
 
@@ -86,13 +86,23 @@ export const ProgressBar = ({ sample, onProgressBarClick }) => {
 
 	return (
 		<div>
-			<HorizontalContainer>
-				<Container onClick={ (event) => {
-					const rect = event.currentTarget.getBoundingClientRect()
-					const x = event.clientX - rect.left
+			<HorizontalContainer onMouseLeave={ () => setMouseDown(false) }>
+				<Container
+					id={ 'container' }
+					onMouseDown={ () => setMouseDown(true) }
+					onMouseUp={ () => setMouseDown(false) }
+					onMouseMove={ (event) => {
+						const rect = event.currentTarget.getBoundingClientRect()
+						const x = event.clientX - rect.left
 
-					onProgressBarClick(x / (rect.right - rect.left))
-				} } id={ 'container' }>
+						onMouseMove(x / (rect.right - rect.left))
+					} }
+					onClick={ (event) => {
+						const rect = event.currentTarget.getBoundingClientRect()
+						const x = event.clientX - rect.left
+
+						onProgressBarClick(x / (rect.right - rect.left))
+					} }>
 					<Filler progress={ progress } id={ 'filler' }>
 						<Dot/>
 					</Filler>

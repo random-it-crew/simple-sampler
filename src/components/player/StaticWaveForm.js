@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 
-export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClick }) => {
+export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove }) => {
 	const [canvasRef, setCanvasRef] = useState(null)
 	const [canvasCtx, setCanavasCtx] = useState(null)
 	const [imageData, setImageData] = useState(null)
 	const { width: windowWidth } = useWindowDimensions()
 
 	useEffect(() => {
-		if (!canvasRef || !canvasCtx || !audioCTX || !sample || !currentSample)
+		if (!canvasRef || !canvasCtx || !audioCTX || !sample)
 			return
 
 		const filterData = (audioBuffer) => {
@@ -77,7 +77,7 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 		}
 
 		drawAudio()
-	}, [audioCTX, sample, canvasRef, windowWidth, currentSample, canvasCtx])
+	}, [audioCTX, sample, canvasRef, windowWidth, canvasCtx])
 
 
 	useEffect(() => {
@@ -118,13 +118,27 @@ export const StaticWaveForm = ({ audioCTX, sample, currentSample, onWaveFormClic
 
 
 	return (
-		<canvas ref={ setCanvasRef } height={ 200 } width={ windowWidth } onClick={
-			(event) => {
+		<canvas
+			ref={ setCanvasRef }
+			height={ 200 }
+			width={ windowWidth }
+			onMouseDown={ () => setMouseDown(true) }
+			onMouseUp={ () => setMouseDown(false) }
+			onMouseLeave={ () => setMouseDown(false) }
+			onMouseMove={ (event) => {
 				const rect = event.currentTarget.getBoundingClientRect()
 				const x = event.clientX - rect.left
 
-				onWaveFormClick(x / (rect.right - rect.left))
+				onMouseMove(x / rect.right)
+			} }
+			onClick={
+				(event) => {
+					const rect = event.currentTarget.getBoundingClientRect()
+					const x = event.clientX - rect.left
+
+					onWaveFormClick(x / (rect.right - rect.left))
+				}
 			}
-		}/>
+		/>
 	)
 }

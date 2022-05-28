@@ -39,6 +39,7 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 	const [currentSample, setCurrentSample] = useState(null)
 	const [playerStatus, setPlayerStatus] = useState('stopped')
 	const [filename, setFilename] = useState(sample.filename)
+	const [mouseDown, setMouseDown] = useState(false)
 
 	useEffect(() => {
 		const onPause = () => setPlayerStatus('paused')
@@ -55,17 +56,32 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 	}, [audioCTX, sample])
 
 
+	const onMouseMove = (progress) => {
+		if (!currentSample)
+			return
+
+		if (mouseDown) {
+
+
+			currentSample.setOffset(currentSample.getDuration() * (progress <= 0 ? 0 : progress))
+		}
+	}
+
 	return (
 		<div>
 			<StaticWaveForm
 				sample={ sample }
 				audioCTX={ audioCTX }
+				setMouseDown={ setMouseDown }
+				onMouseMove={ onMouseMove }
 				currentSample={ currentSample }
 				onWaveFormClick={ (progress) => {
 					currentSample.setOffset(currentSample.getDuration() * progress)
 				} }/>
 			<ProgressBar
 				sample={ currentSample }
+				setMouseDown={ setMouseDown }
+				onMouseMove={ onMouseMove }
 				onProgressBarClick={ (progress) => {
 					currentSample.setOffset(currentSample.getDuration() * progress)
 				} }/>
