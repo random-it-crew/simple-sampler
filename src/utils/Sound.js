@@ -24,6 +24,9 @@ export class Sound {
 		const buffer = await (new Response(sample.blob)).arrayBuffer()
 		const audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
 		this.duration = audioBuffer.duration
+
+		if (!this.audioBuffer)
+			this.audioBuffer = audioBuffer
 	}
 
 	setOffset = async (offset) => {
@@ -59,8 +62,6 @@ export class Sound {
 			if (this.status === 'stopped' && this.onEnded) {
 				this.onEnded()
 			}
-
-			console.log(this.loop, this.status)
 
 			if (this.loop && this.status === 'stopped') {
 				this.status = 'playing'
@@ -113,5 +114,38 @@ export class Sound {
 			return end - start
 		}
 		return 0
+	}
+
+	getTruncatedBuffer = () => {
+		if (!this.audioBuffer)
+			return null
+
+		const start = (this.duration * this.startPoint)
+		const end = (this.duration * (1 - (1 - this.endPoint) - this.startPoint))
+
+		const startOffset = this.audioBuffer.sampleRate * start
+		const endOffset = startOffset + (this.audioBuffer.sampleRate * end)
+		const frameCount = endOffset - startOffset
+
+		let newBuff = null
+
+		try {
+			const tmpBuff = new Float32Array(frameCount)
+
+			newBuff = this.audioCTX.context.createBuffer(
+				this.audioBuffer.numberOfChannels,
+				endOffset - startOffset,
+				this.audioBuffer.sampleRate
+			)
+
+			for (let chann = 0; chann < this.audioBuffer.numberOfChannels; chann += 1) {
+				this.audioBuffer.copyFromChannel(tmpBuff, chann, startOffset)
+				newBuff.copyToChannel(tmpBuff, chann, 0)
+			}
+		} catch (err) {
+			console.error(err)
+		}
+
+		return newBuff
 	}
 }

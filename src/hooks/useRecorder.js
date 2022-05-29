@@ -24,14 +24,12 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 			}
 
 			mediaRecorder.onstart = () => {
-				console.log('started recording')
 				startTime = Date.now()
 				chunks.current = []
 				setIsRecording(true)
 			}
 
 			mediaRecorder.onstop = () => {
-				console.log('stopped recording')
 				const blob = new Blob(chunks.current, { type: 'audio/webm' })
 
 				let blobObject = {
@@ -39,11 +37,8 @@ export default function useRecorder({ mediaStream, onDataAvailable }) {
 					startTime: startTime,
 					stopTime: Date.now(),
 					options: options,
-					blobURL: window.URL.createObjectURL(blob),
 					filename: 'sample.wav'
 				}
-
-				console.log(blobObject)
 
 				setIsRecording(false)
 				startTime = null

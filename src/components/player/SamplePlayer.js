@@ -6,6 +6,7 @@ import { ProgressBar } from './ProgressBar'
 import styled from 'styled-components'
 import { MultiRangeSlider } from '../MultiRangeSlider'
 import { LoopCheckBox } from './LoopCheckBox'
+import toWav from 'audiobuffer-to-wav'
 
 const Container = styled.div`
   display: flex;
@@ -115,16 +116,24 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 			<Container>
 				<PlayButton sample={ currentSample } playerStatus={ playerStatus }/>
 				<LoopCheckBox onChange={ (loop) => {
-					console.log(currentSample, loop)
 					if (currentSample)
 						currentSample.loop = loop
-				} } />
-				<a
-					href={ sample.blobURL }
-					download={ filename.indexOf('.wav') !== -1 ? filename : filename + '.wav' }
-				>
-					<Button>download</Button>
-				</a>
+				} }/>
+				<Button onClick={ () => {
+					const buff = currentSample.getTruncatedBuffer()
+					const wav = toWav(buff)
+					const blob = new window.Blob([ new DataView(wav) ], {
+						mimeType: 'audio/wav'
+					})
+
+					const a = document.createElement('a')
+					document.body.appendChild(a)
+					a.style = 'display: none'
+					a.href = window.URL.createObjectURL(blob)
+					a.download = filename.indexOf('.wav') !== -1 ? filename : filename + '.wav'
+					a.click()
+					window.URL.revokeObjectURL(a.href)
+				} }>download</Button>
 				<Input
 					type={ 'text' }
 					value={ filename }
