@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 
 const Container = styled.div`
   display: flex;
@@ -78,71 +79,77 @@ const ThumbRight = styled(Thumb)`
 
 
 export const MultiRangeSlider = ({ onChange, min, max }) => {
-  const [minVal, setMinVal] = useState(min)
-  const [maxVal, setMaxVal] = useState(max)
-  const minValRef = useRef(min)
-  const maxValRef = useRef(max)
-  const range = useRef(null)
+	const [minVal, setMinVal] = useState(min)
+	const [maxVal, setMaxVal] = useState(max)
+	const minValRef = useRef(min)
+	const maxValRef = useRef(max)
+	const range = useRef(null)
 
-  const getPercent = useCallback((value) => Math.round(((value - min) / (max - min)) * 100),[min, max])
+	const getPercent = useCallback((value) => Math.round(((value - min) / (max - min)) * 100),[min, max])
 
-  useEffect(() => {
-    if (maxValRef.current) {
-      const minPercent = getPercent(minVal)
-      const maxPercent = getPercent(+maxValRef.current.value)
+	useEffect(() => {
+		if (maxValRef.current) {
+			const minPercent = getPercent(minVal)
+			const maxPercent = getPercent(+maxValRef.current.value)
 
-      if (range.current) {
-        range.current.style.left = `${minPercent}%`
-        range.current.style.width = `${maxPercent - minPercent}%`
-      }
-    }
-  }, [minVal, getPercent]);
+			if (range.current) {
+				range.current.style.left = `${minPercent}%`
+				range.current.style.width = `${maxPercent - minPercent}%`
+			}
+		}
+	}, [minVal, getPercent])
 
 
-  useEffect(() => {
-    if (minValRef.current) {
-      const minPercent = getPercent(+minValRef.current.value)
-      const maxPercent = getPercent(maxVal)
+	useEffect(() => {
+		if (minValRef.current) {
+			const minPercent = getPercent(+minValRef.current.value)
+			const maxPercent = getPercent(maxVal)
 
-      if (range.current) {
-        range.current.style.width = `${maxPercent - minPercent}%`
-      }
-    }
-  }, [maxVal, getPercent])
+			if (range.current) {
+				range.current.style.width = `${maxPercent - minPercent}%`
+			}
+		}
+	}, [maxVal, getPercent])
 
-  useEffect(() => {
-    onChange({ min: minVal, max: maxVal })
-  }, [minVal, maxVal, onChange])
+	useEffect(() => {
+		onChange({ min: minVal, max: maxVal })
+	}, [minVal, maxVal, onChange])
 
-  return (
-    <Container>
-      <ThumbLeft
-        type="range"
-        min={min}
-        max={max}
-        value={minVal}
-        ref={minValRef}
-        onChange={(event) => {
-          const value = Math.min(Number(event.target.value), maxVal - 1)
-          setMinVal(value)
-        }}
-        style={{ zIndex: (minVal > max - 100) && "5" }}
-      />
-      <ThumbRight
-        type="range"
-        min={min}
-        max={max}
-        value={maxVal}
-        ref={maxValRef}
-        onChange={(event) => {
-          const value = Math.max(Number(event.target.value), minVal + 1)
-          setMaxVal(value)
-        }}
-      />
-      <Slider>
-        <SliderTrack/>
-        <SliderRange ref={range}/>
-      </Slider>
-    </Container>
-  )
+	return (
+		<Container>
+			<ThumbLeft
+				type="range"
+				min={min}
+				max={max}
+				value={minVal}
+				ref={minValRef}
+				onChange={(event) => {
+					const value = Math.min(Number(event.target.value), maxVal - 1)
+					setMinVal(value)
+				}}
+				style={{ zIndex: (minVal > max - 100) && '5' }}
+			/>
+			<ThumbRight
+				type="range"
+				min={min}
+				max={max}
+				value={maxVal}
+				ref={maxValRef}
+				onChange={(event) => {
+					const value = Math.max(Number(event.target.value), minVal + 1)
+					setMaxVal(value)
+				}}
+			/>
+			<Slider>
+				<SliderTrack/>
+				<SliderRange ref={range}/>
+			</Slider>
+		</Container>
+	)
+}
+
+MultiRangeSlider.propTypes = {
+	onChange: PropTypes.func,
+	min: PropTypes.number,
+	max: PropTypes.number
 }

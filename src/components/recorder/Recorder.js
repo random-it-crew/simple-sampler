@@ -1,7 +1,10 @@
-import useRecorder from '../../hooks/useRecorder'
 import React, { useEffect } from 'react'
-import { LiveWaveForm } from './LiveWaveForm'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
+import { LiveWaveForm } from './LiveWaveForm'
+import { AudioCTX } from '../../utils/createAudioContext'
+import useRecorder from '../../hooks/useRecorder'
+
 
 const Button = styled.button`
 	padding: 1vh;
@@ -61,4 +64,11 @@ export const Recorder = ({ mediaStream, audioCTX, setSample }) => {
 			{ isRecording && <LiveWaveForm audioCTX={ audioCTX } mediaStream={ mediaStream }/> }
 		</div>
 	)
+}
+
+
+Recorder.propTypes = {
+	mediaStream: MediaStream,
+	audioCTX: AudioCTX,
+	setSample: PropTypes.func
 }

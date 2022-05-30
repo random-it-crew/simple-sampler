@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import useWindowDimensions from '../../hooks/useWindowDimensions'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
+import useWindowDimensions from '../../hooks/useWindowDimensions'
+import { AudioCTX } from '../../utils/createAudioContext'
+import { Sound } from '../../utils/Sound'
 
 
 const padding = 10
@@ -12,8 +15,8 @@ const CanvasContainer = styled.div`
 
 
 export const StaticWaveForm = ({
-								   audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove, points
-							   }) => {
+	audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove, points
+}) => {
 	const [canvasRef, setCanvasRef] = useState(null)
 	const [canvasCtx, setCanvasCtx] = useState(null)
 	const [imageData, setImageData] = useState(null)
@@ -191,4 +194,18 @@ export const StaticWaveForm = ({
 			/>
 		</CanvasContainer>
 	)
+}
+
+StaticWaveForm.propTypes = {
+	audioCTX: AudioCTX,
+	currentSample: Sound,
+	onWaveFormClick: PropTypes.func,
+	setMouseDown: PropTypes.func,
+	onMouseMove: PropTypes.func,
+	points: PropTypes.arrayOf(PropTypes.number),
+	sample: PropTypes.shape({
+		blob: Blob,
+		filename: PropTypes.string
+
+	})
 }

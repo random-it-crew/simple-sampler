@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 import toWav from 'audiobuffer-to-wav'
 
+import { AudioCTX } from '../../utils/createAudioContext'
 import { Sound } from '../../utils/Sound'
 import { StaticWaveForm } from './StaticWaveForm'
 import { PlayButton } from './PlayButton'
@@ -151,4 +153,14 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 
 		</div>
 	)
+}
+
+
+SamplePlayer.propTypes = {
+	audioCTX: AudioCTX,
+	sample: PropTypes.shape({
+		blob: Blob,
+		filename: PropTypes.string
+
+	})
 }

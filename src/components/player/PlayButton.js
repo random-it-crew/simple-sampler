@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
+import { Sound } from '../../utils/Sound'
 
 const Button = styled.button`
 	padding: 1vh;
@@ -36,4 +38,9 @@ export const PlayButton = ({sample, playerStatus}) => {
 			{ label }
 		</Button>
 	)
+}
+
+PlayButton.propTypes = {
+	sample: Sound,
+	playerStatus: PropTypes.string,
 }

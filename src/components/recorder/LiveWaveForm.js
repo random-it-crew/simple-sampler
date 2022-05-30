@@ -1,5 +1,6 @@
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 import React, { useEffect, useState } from 'react'
+import { AudioCTX } from '../../utils/createAudioContext'
 
 export const LiveWaveForm = ({ mediaStream, audioCTX }) => {
 	const { width } = useWindowDimensions()
@@ -67,4 +68,9 @@ export const LiveWaveForm = ({ mediaStream, audioCTX }) => {
 	}, [audioCTX, canvasRef, mediaStream, width])
 
 	return <canvas ref={ setCanvasRef } height={ 200 } width={ width }/>
+}
+
+LiveWaveForm.propTypes = {
+	audioCTX: AudioCTX,
+	mediaStream: MediaStream
 }

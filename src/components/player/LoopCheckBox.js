@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 
 const Container = styled.div`
 	padding: 1vh;
@@ -24,4 +25,8 @@ export const LoopCheckBox = ({ onChange }) => {
 			<Input type={ 'checkbox' } onChange={ () => setValue(!value) }/>
 		</Container>
 	)
+}
+
+LoopCheckBox.propTypes = {
+	onChange: PropTypes.func
 }

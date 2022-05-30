@@ -5,7 +5,7 @@ export class Sound {
 		this.status = 'stopped'
 		this.startedAt = 0
 		this.elapsed = 0
-		this.duration =0
+		this.duration = 0
 		this.startPoint = 0
 		this.endPoint = 1
 		this.loop = false
@@ -19,7 +19,7 @@ export class Sound {
 		this.getSampleDuration(sample).catch(console.error)
 	}
 
-	getSampleDuration = async (sample) => {
+	async getSampleDuration(sample) {
 		const buffer = await (new Response(sample.blob)).arrayBuffer()
 		const audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
 		this.duration = audioBuffer.duration
@@ -28,7 +28,7 @@ export class Sound {
 			this.audioBuffer = audioBuffer
 	}
 
-	setOffset = async (offset) => {
+	async setOffset(offset) {
 		this.elapsed = offset
 
 		if (this.status === 'playing') {
@@ -39,7 +39,7 @@ export class Sound {
 		}
 	}
 
-	play = async () => {
+	async play() {
 		if (!this.audioBuffer) {
 			const buffer = await (new Response(this.sample.blob)).arrayBuffer()
 			this.audioBuffer = await this.audioCTX.context.decodeAudioData(buffer)
@@ -71,7 +71,7 @@ export class Sound {
 		this.onPlay?.()
 	}
 
-	stopReplay = () => {
+	stopReplay() {
 		if (this.source) {
 			this.source.disconnect()
 			this.source.stop()
@@ -79,21 +79,21 @@ export class Sound {
 		}
 	}
 
-	pause = () => {
+	pause() {
 		this.status = 'paused'
 		this.stopReplay()
 		this.elapsed = this.audioCTX.context.currentTime - this.startedAt
 		this.onPause?.()
 	}
 
-	stop = () => {
+	stop() {
 		this.status = 'stopped'
 		this.stopReplay()
 		this.startedAt = 0
 		this.elapsed = 0
 	}
 
-	getElapsedTime = () => {
+	getElapsedTime() {
 		if (this.status !== 'playing' && this.elapsed)
 			return this.elapsed
 		else if (this.startedAt)
@@ -101,11 +101,11 @@ export class Sound {
 		return 0
 	}
 
-	getCursorPosition = () => {
+	getCursorPosition() {
 		return (this.duration * this.startPoint + this.getElapsedTime()) / this.duration
 	}
 
-	getDuration = () => {
+	getDuration() {
 		if (this.duration) {
 			const start = this.duration * this.startPoint
 			const end = this.duration * this.endPoint
@@ -115,7 +115,7 @@ export class Sound {
 		return 0
 	}
 
-	getTruncatedBuffer = async () => {
+	async getTruncatedBuffer() {
 		if (!this.audioBuffer)
 			return null
 

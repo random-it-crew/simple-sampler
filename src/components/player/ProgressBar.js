@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
-
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
+import { Sound } from '../../utils/Sound'
+
 
 const Container = styled.div`
     height: 20px;
@@ -114,4 +116,11 @@ export const ProgressBar = ({ sample, onProgressBarClick, setMouseDown, onMouseM
 
 		</div>
 	)
+}
+
+ProgressBar.propTypes = {
+	sample: Sound,
+	onProgressBarClick: PropTypes.func,
+	setMouseDown: PropTypes.func,
+	onMouseMove: PropTypes.func,
 }
