@@ -1,32 +1,41 @@
-# MQTT-scale-reader frontend
+# Simple-Sampler
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## technologies
 
-this project use :
+this project uses :
 
 - ReactJS (functional components)
-- Websockets
 - styled-components
+- web-audio api
 
 ## description
 
-this web application uses react JS to provide a tool to test the correct configuration of the BOXY qrcode-reader
+this web application allows sound recording from any input available to the web browser, It then allows resizing of the 
+sample, and the download of the sample as a .wav file
 
 ## Using the application
 
-this web app only has a single page
+### sampling
 
-this page accepts 1 url parameters : 
+- to start recording, press the `start recording` button
+- to stop the recording, press the `stop recording` button
+- to discard the sample, press the `start recording` button again, and a new sample will be saved, overwritting the last
 
-- `wsUrl` -> url of the websocket server the app will connect to
+### cutting
 
-they can be formated as : 
+- you can set the start and end points of the sample using the slider at the top of the sample waveform
 
-```
-http://localhost:3000?wsUrl=ws://localhost:8765
-```
+### replaying
+
+- you can use the player controls at the bottom of the sample waveform to re-play your cut sample (check loop checkbox to make it loop)
+
+### downloading
+
+- you can download the sample by pressing the `download` button, it will start a download for the sample with the name
+that was specified in the text input at the right of the download button
+
 
 ## Available Scripts
 
