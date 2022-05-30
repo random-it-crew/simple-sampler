@@ -5,19 +5,18 @@ export class Sound {
 		this.status = 'stopped'
 		this.startedAt = 0
 		this.elapsed = 0
-
+		this.duration =0
 		this.startPoint = 0
 		this.endPoint = 1
 		this.loop = false
+		this.source = null
+		this.audioBuffer = null
 
 		this.onEnded = onEnded
 		this.onPlay = onPlay
 		this.onPause = onPause
 
-		this.source = null
-		this.audioBuffer = null
-
-		this.getSampleDuration(sample)
+		this.getSampleDuration(sample).catch(console.error)
 	}
 
 	getSampleDuration = async (sample) => {
@@ -116,7 +115,7 @@ export class Sound {
 		return 0
 	}
 
-	getTruncatedBuffer = () => {
+	getTruncatedBuffer = async () => {
 		if (!this.audioBuffer)
 			return null
 

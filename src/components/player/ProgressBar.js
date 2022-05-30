@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const Container = styled.div`
     height: 20px;
-    width: 90%;
+    width: 85%;
     background-color: #e0e0de;
     border-radius: 50px;
     margin: 10px;
@@ -68,10 +68,10 @@ export const ProgressBar = ({ sample, onProgressBarClick, setMouseDown, onMouseM
 		const updateProgress = () => {
 			frameID = requestAnimationFrame(updateProgress)
 
-			const progress = (sample.getElapsedTime() / sample.getDuration()) * 100
+			const prog = (sample.getElapsedTime() / sample.getDuration()) * 100
 
 			setElapsed(sample.getElapsedTime())
-			setProgress(progress > 100 ? 100 : progress)
+			setProgress(prog > 100 ? 100 : prog)
 		}
 
 		updateProgress()
@@ -108,7 +108,7 @@ export const ProgressBar = ({ sample, onProgressBarClick, setMouseDown, onMouseM
 					</Filler>
 				</Container>
 				<Label>
-					{ elapsed.toFixed(1) }/{ sample.getDuration().toFixed(1) }s
+					{ elapsed.toFixed(2) }/{ sample.getDuration().toFixed(2) }s
 				</Label>
 			</HorizontalContainer>
 

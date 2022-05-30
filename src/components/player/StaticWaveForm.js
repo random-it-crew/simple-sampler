@@ -6,14 +6,14 @@ import styled from 'styled-components'
 const padding = 10
 
 const CanvasContainer = styled.div`
-	padding-left: ${padding}px;
-	padding-right: ${padding}px;
+	padding-left: ${ padding }px;
+	padding-right: ${ padding }px;
 `
 
 
 export const StaticWaveForm = ({
 								   audioCTX, sample, currentSample, onWaveFormClick, setMouseDown, onMouseMove, points
-}) => {
+							   }) => {
 	const [canvasRef, setCanvasRef] = useState(null)
 	const [canvasCtx, setCanvasCtx] = useState(null)
 	const [imageData, setImageData] = useState(null)
@@ -25,17 +25,22 @@ export const StaticWaveForm = ({
 			return
 
 		const filterData = (audioBuffer) => {
-			const rawData = audioBuffer.getChannelData(0) // We only need to work with one channel of data
-			const samples = rawData.length / 15 // Number of samples we want to have in our final data set
-			const blockSize = Math.floor(rawData.length / samples) // the number of samples in each subdivision
+			const rawData = audioBuffer.getChannelData(0)
+			const samples = rawData.length / 15
+			const blockSize = Math.floor(rawData.length / samples)
 			const filteredData = []
+
 			for (let i = 0; i < samples; i++) {
-				let blockStart = blockSize * i // the location of the first sample in the block
+				let blockStart = blockSize * i
 				let sum = 0
 				for (let j = 0; j < blockSize; j++) {
 					sum = sum + Math.abs(rawData[blockStart + j]) // find the sum of all the samples in the block
 				}
-				filteredData.push(sum / blockSize) // divide the sum by the block size to get the average
+
+				const data = sum / blockSize // divide the sum by the block size to get the average
+
+				if (!Number.isNaN(data))
+					filteredData.push(data)
 			}
 			return filteredData
 		}
@@ -46,9 +51,6 @@ export const StaticWaveForm = ({
 		}
 
 		const draw = (normalizedData) => {
-			// set up the canvas
-
-
 			canvasRef.width = canvasRef.offsetWidth
 			canvasRef.height = canvasRef.offsetHeight
 
@@ -81,12 +83,12 @@ export const StaticWaveForm = ({
 					height = height > canvasRef.offsetHeight / 2
 				}
 
-				drawLineSegment(canvasCtx, x, height, width, (i + 1) % 2)
+				drawLineSegment(x, height, width, (i + 1) % 2)
 			}
 			setImageData(canvasCtx.getImageData(0, 0, canvasRef.width, canvasRef.height))
 		}
 
-		const drawLineSegment = (ctx, x, height, width, isEven) => {
+		const drawLineSegment = (x, height, width, isEven) => {
 			canvasCtx.lineWidth = 1 // how thick the line is
 			canvasCtx.strokeStyle = 'rgb(255, 255, 255)'
 			canvasCtx.beginPath()
@@ -105,7 +107,7 @@ export const StaticWaveForm = ({
 			draw(normalizeData(filterData(audioBuffer)))
 		}
 
-		drawAudio()
+		drawAudio().catch(console.error)
 	}, [audioCTX, sample, canvasRef, windowWidth, canvasCtx, start, end])
 
 
@@ -122,18 +124,37 @@ export const StaticWaveForm = ({
 			return
 
 		let frameID
+		let count = 0
+
 		const updateCursor = () => {
 			frameID = requestAnimationFrame(updateCursor)
-			canvasCtx.putImageData(imageData, 0, 0)
 
-			const cursorPos = currentSample.getCursorPosition() * canvasRef.width
-			canvasCtx.lineWidth = 3 // how thick the line is
-			canvasCtx.strokeStyle = 'rgb(75, 75, 75)'
-			canvasCtx.beginPath()
+			if (count % 2 === 0) {
+				canvasCtx.putImageData(imageData, 0, 0)
 
-			canvasCtx.moveTo(cursorPos, -canvasRef.height)
-			canvasCtx.lineTo(cursorPos, canvasRef.height)
-			canvasCtx.stroke()
+				let cursorPos = currentSample.getCursorPosition() * canvasRef.width
+
+				const sampleStart = canvasRef.width * start
+				const sampleEnd = canvasRef.width - (sampleStart + canvasRef.width * (1 - end))
+				const endWidth = sampleEnd + sampleStart
+
+				if (cursorPos < sampleStart)
+					cursorPos = sampleStart
+				else if (cursorPos > endWidth)
+					cursorPos = endWidth
+
+				canvasCtx.lineWidth = 3 // how thick the line is
+				canvasCtx.strokeStyle = 'rgb(75, 75, 75)'
+				canvasCtx.beginPath()
+
+				canvasCtx.moveTo(cursorPos, -canvasRef.height)
+				canvasCtx.lineTo(cursorPos, canvasRef.height)
+				canvasCtx.stroke()
+
+				if (count === 1000)
+					count = 0
+			}
+			count += 1
 		}
 
 		updateCursor()
@@ -141,7 +162,7 @@ export const StaticWaveForm = ({
 		return () => {
 			cancelAnimationFrame(frameID)
 		}
-	}, [currentSample, canvasRef, canvasCtx, imageData])
+	}, [currentSample, canvasRef, canvasCtx, imageData, end, start])
 
 
 	return (

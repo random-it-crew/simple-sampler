@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { StaticWaveForm } from './StaticWaveForm'
+import styled from 'styled-components'
+import toWav from 'audiobuffer-to-wav'
+
 import { Sound } from '../../utils/Sound'
+import { StaticWaveForm } from './StaticWaveForm'
 import { PlayButton } from './PlayButton'
 import { ProgressBar } from './ProgressBar'
-import styled from 'styled-components'
 import { MultiRangeSlider } from '../MultiRangeSlider'
 import { LoopCheckBox } from './LoopCheckBox'
-import toWav from 'audiobuffer-to-wav'
 
 const Container = styled.div`
   display: flex;
@@ -65,6 +66,10 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 
 		currentSample.startPoint = points[0]
 		currentSample.endPoint = points[1]
+
+		if (currentSample.endPoint < currentSample.getCursorPosition()) {
+			currentSample.stop()
+		}
 	}, [currentSample, points])
 
 	const onMouseMove = (progress) => {
@@ -77,27 +82,42 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 	}
 
 	const onWaveCLick = (progress) => {
-		if (progress < points[0]) {
+		if (progress < points[0])
 			currentSample.setOffset(0)
-		} else if (progress > points[1])
+		else if (progress > points[1])
 			currentSample.setOffset(currentSample.getDuration())
 		else
 			currentSample.setOffset(currentSample.getDuration() * progress)
 	}
 
+	const downloadSample = async () => {
+		const buff = await currentSample.getTruncatedBuffer()
+		const wav = toWav(buff)
+		const blob = new window.Blob([new DataView(wav)], {
+			mimeType: 'audio/wav'
+		})
+
+		const a = document.createElement('a')
+		document.body.appendChild(a)
+		a.style = 'display: none'
+		a.href = window.URL.createObjectURL(blob)
+		a.download = filename.indexOf('.wav') !== -1 ? filename : filename + '.wav'
+		a.click()
+		window.URL.revokeObjectURL(a.href)
+	}
+
+
+	const onSliderData = (data) => {
+		const { min, max } = data
+
+		if (min / 100 !== points[0] || max / 100 !== points[1])
+
+			setPoints([min / 100, max / 100])
+	}
+
 	return (
 		<div>
-			<MultiRangeSlider
-				min={ 0 }
-				max={ 100 }
-				onChange={ (data) => {
-					const { min, max } = data
-
-					if (min / 100 !== points[0] || max / 100 !== points[1])
-
-						setPoints([min / 100, max / 100])
-				} }
-			/>
+			<MultiRangeSlider min={ 0 } max={ 100 } onChange={ onSliderData } />
 			<StaticWaveForm
 				sample={ sample }
 				audioCTX={ audioCTX }
@@ -119,21 +139,7 @@ export const SamplePlayer = ({ sample, audioCTX }) => {
 					if (currentSample)
 						currentSample.loop = loop
 				} }/>
-				<Button onClick={ () => {
-					const buff = currentSample.getTruncatedBuffer()
-					const wav = toWav(buff)
-					const blob = new window.Blob([ new DataView(wav) ], {
-						mimeType: 'audio/wav'
-					})
-
-					const a = document.createElement('a')
-					document.body.appendChild(a)
-					a.style = 'display: none'
-					a.href = window.URL.createObjectURL(blob)
-					a.download = filename.indexOf('.wav') !== -1 ? filename : filename + '.wav'
-					a.click()
-					window.URL.revokeObjectURL(a.href)
-				} }>download</Button>
+				<Button onClick={ downloadSample }>download</Button>
 				<Input
 					type={ 'text' }
 					value={ filename }
